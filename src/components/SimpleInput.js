@@ -1,8 +1,9 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 
 const SimpleInput = (props) => {
   const [enteredName, setEnteredName] = useState('');
   const [enteredNameTouched, setEnteredNameTouched] = useState(false);
+  const [fromIsValid, setFromIsValid] = useState(false);
 
   const enteredNameIsValid = enteredName.trim() !== '';
 
@@ -11,6 +12,11 @@ const SimpleInput = (props) => {
   const nameInputClasses = nameInputIsValid
     ? 'form-control invalid'
     : 'form-control';
+
+  useEffect(() => {
+    if (enteredNameIsValid) setFromIsValid(true);
+    else setFromIsValid(false);
+  }, [enteredNameIsValid]);
 
   const handleNameInputBlur = (event) => {
     setEnteredNameTouched(true);
@@ -47,7 +53,7 @@ const SimpleInput = (props) => {
         )}
       </div>
       <div className="form-actions">
-        <button>Submit</button>
+        <button disabled={!fromIsValid}>Submit</button>
       </div>
     </form>
   );
