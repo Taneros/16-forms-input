@@ -1,38 +1,30 @@
 import React, {useState} from 'react';
+import useInput from '../hooks/useInput';
 
 const SimpleInput = (props) => {
-  const [enteredName, setEnteredName] = useState('');
-  const [enteredNameTouched, setEnteredNameTouched] = useState(false);
+  const {
+    value: enteredName,
+    valueIsValid: nameIsValid,
+    hasError: nameInputHasError,
+    handleInputValueChange: handleInputNameChange,
+    handleInputBlur: handleInputNameBlur,
+    resetForm,
+  } = useInput((name) => name.trim() !== '');
 
-  const enteredNameIsValid = enteredName.trim() !== '';
-
-  const nameInputIsValid = !enteredNameIsValid && enteredNameTouched;
-
-  const nameInputClasses = nameInputIsValid
+  const nameInputClasses = nameInputHasError
     ? 'form-control invalid'
     : 'form-control';
 
   let formIsValid = false;
 
-  if (enteredNameIsValid) formIsValid = true;
-
-  const handleNameInputBlur = (event) => {
-    setEnteredNameTouched(true);
-  };
-
-  const handleNameInputChange = (event) => {
-    setEnteredName(event.target.value);
-  };
+  if (nameIsValid) formIsValid = true;
 
   const handleFormSubmit = (event) => {
     event.preventDefault();
 
-    setEnteredNameTouched(true);
+    if (nameIsValid === false) return;
 
-    if (enteredNameIsValid === false) return;
-
-    setEnteredName('');
-    setEnteredNameTouched(false);
+    resetForm();
   };
 
   return (
@@ -43,10 +35,10 @@ const SimpleInput = (props) => {
           type="text"
           id="name"
           value={enteredName}
-          onBlur={handleNameInputBlur}
-          onChange={handleNameInputChange}
+          onBlur={handleInputNameBlur}
+          onChange={handleInputNameChange}
         />
-        {nameInputIsValid && (
+        {nameInputHasError && (
           <p className="error-text">Name must not be empty!</p>
         )}
       </div>
