@@ -1,11 +1,11 @@
 import React, {useState} from 'react';
 
-const useInput = (validateValue) => {
+const useInput = (validateValueCallback) => {
   const [enteredValue, setEnteredValue] = useState('');
   const [isFormTouched, setIsFormTouched] = useState(false);
 
   // const valueIsValid = enteredValue.trim() !== '';
-  const valueIsValid = validateValue(enteredValue);
+  const valueIsValid = validateValueCallback(enteredValue);
 
   const hasError = !valueIsValid && isFormTouched;
 
