@@ -1,29 +1,47 @@
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useReducer} from 'react';
+
+const initialState = {
+  value: '',
+  isFormTouched: false,
+};
+
+const inputStateReducer = (state, action) => {
+  switch (action.type) {
+    case 'INPUT':
+      return {...state, value: action.value};
+    case 'BLUR':
+      return {...state, isFormTouched: true};
+    case 'RESET':
+      return {value: '', isFormTouched: false};
+    default:
+      return state;
+  }
+};
 
 const useInput = (validateValueCallback) => {
-  const [enteredValue, setEnteredValue] = useState('');
-  const [isFormTouched, setIsFormTouched] = useState(false);
+  const [{value, isFormTouched}, dispatch] = useReducer(
+    inputStateReducer,
+    initialState,
+  );
 
-  // const valueIsValid = enteredValue.trim() !== '';
-  const valueIsValid = validateValueCallback(enteredValue);
+  const valueIsValid = validateValueCallback(value);
 
   const hasError = !valueIsValid && isFormTouched;
 
   const handleInputValueChange = useCallback((event) => {
-    setEnteredValue(event.target.value);
+    dispatch({type: 'INPUT', value: event.target.value});
   }, []);
 
   const handleInputBlur = useCallback(() => {
-    setIsFormTouched(true);
+    dispatch({type: 'BLUR'});
   }, []);
 
   const resetForm = useCallback(() => {
-    setEnteredValue('');
-    setIsFormTouched(false);
+    dispatch({type: 'RESET'});
   }, []);
 
   return {
-    value: enteredValue,
+    value: value,
     valueIsValid,
     hasError,
     handleInputValueChange,
